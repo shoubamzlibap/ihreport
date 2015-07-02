@@ -41,7 +41,6 @@ Lorem ipsum"""
         with open(expected_asciidoc_file, 'r') as fh:
             actual_asciidoc = fh.read()
         self.assertEqual(expected_asciidoc, actual_asciidoc)
-        self.assertEqual('Implement render_to_pdf()', 'Not implemented')
         
     def test_today(self):
         """

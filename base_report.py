@@ -50,8 +50,8 @@ class BaseReport(object):
         else:
             self.output_filename = 'report_' + self.today()
         self.body_template = body_template
-        self.output_dir = output_dir
-        self.tmp_dir = tmp_dir
+        self.output_dir = os.getcwd() + '/' + output_dir
+        self.tmp_dir = os.getcwd() + '/' + tmp_dir
         self.asciidoc = self._render_template(template=body_template, data=body_data)
 
 
@@ -93,7 +93,7 @@ class BaseReport(object):
         One could probably just keep it in memory, but it is nice
         for debugging to see the asciidoc source. 
         """
-        self.asciidoc_filename = os.getcwd() + '/' + self.tmp_dir + '/' + self.output_filename + '.txt'
+        self.asciidoc_filename = self.tmp_dir + '/' + self.output_filename + '.txt'
         with open(self.asciidoc_filename, 'w') as filehandle:
             filehandle.write(self.asciidoc)
 
@@ -104,5 +104,19 @@ class BaseReport(object):
 
         """
         self._write_asciidoc()
-
+        # can we do better then this? - like just adding the non-defaults ...
+        a2x_opts = {'verbose': 0, 'keep_artifacts': False, 'backend': None, 'skip_asciidoc': False,
+'destination_dir': self.output_dir, 'fop': True, 'backend_opts': '', 'dry_run': False, 'icons':
+False, 'conf_file': None, 'stylesheet': None, 'epubcheck': False, 'lynx': False, 'resources':
+[], 'format': 'pdf', 'resource_manifest': None, 'safe': False, 'fop_opts': '', 'xsltproc_opts':
+'', 'copy': False, 'asciidoc_opts': '', 'doctype': 'book', 'xsl_file': None, 'dblatex_opts':
+'', 'icons_dir': None, 'attributes': ['docinfo'], 'no_xmllint': False}
+        a2x_obj = a2x.A2X(a2x_opts)
+        a2x.OPTIONS = a2x_obj       # verbose and dry_run used by utility functions.
+        a2x_obj.asciidoc_file = self.asciidoc_filename
+        try:
+            a2x_obj.load_conf()
+            a2x_obj.execute()
+        except KeyboardInterrupt:
+            exit(1)
 
