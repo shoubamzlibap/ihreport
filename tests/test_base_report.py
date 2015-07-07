@@ -1,17 +1,11 @@
 import unittest
-import os
-import sys
 import mock
 import re
 
-path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if not path in sys.path:
-    sys.path.insert(1, path)
-del path
+from .. import base_report
 
 class TestBaseReport(unittest.TestCase):
     def setUp(self):
-        import base_report
         self.BaseReport = base_report.BaseReport
     
     def tearDown(self):
